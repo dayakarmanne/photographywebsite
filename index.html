@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#07090c" />
+  <title>ARUN | Photography & Studio</title>
+  <link rel="icon" type="image/png" href="https://res.cloudinary.com/daarlhq52/image/upload/v1788944962/WhatsApp_Image_2026-09-09_at_1.35.21_PM-removebg-preview_dezfsc.png" />
+  
+  <!-- Font Awesome & Google Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #07090c;
+      
+      /* Solid Rich Dark Backgrounds for All Cards */
+      --bg-card: #0b0e14;
+      --bg-card-hover: #121822;
+      --border-glass: rgba(180, 125, 35, 0.45);
+      --border-glass-hover: rgba(220, 160, 50, 0.95);
+      
+      /* Harmonized Dark Gold Palette extracted from reference */
+      --accent-gold-dark: #8c5d19;
+      --accent-gold-glow: #c68a28;
+      --accent-gold-light: #f3cf7e;
+      
+      --text-main: #fcf8f2;
+      --text-muted: #e6ded1;
+      --font-display: 'Cinzel', serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    a, button, [role="button"] {
+      text-decoration: none !important;
+      outline: none;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      overflow-x: hidden;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      body, a, button, [role="button"] {
+        cursor: none !important;
+      }
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      line-height: 1.85;
+      position: relative;
+    }
+
+    /* CUSTOM CURSOR WITH GLOW */
+    .custom-cursor-dot {
+      position: fixed;
+      top: 0; left: 0;
+      width: 8px; height: 8px;
+      background-color: var(--accent-gold-glow);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 14px var(--accent-gold-glow), 0 0 25px var(--accent-gold-dark);
+    }
+
+    .custom-cursor-ring {
+      position: fixed;
+      top: 0; left: 0;
+      width: 38px; height: 38px;
+      border: 1.5px solid rgba(198, 138, 40, 0.85);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 12px rgba(140, 93, 25, 0.4);
+      transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+    }
+
+    @media (hover: none) or (pointer: coarse) {
+      .custom-cursor-dot, .custom-cursor-ring { display: none !important; }
+    }
+
+    /* =========================================================
+        GOLD PARTICLE HOVER SYSTEM
+    ========================================================= */
+    .gold-sprinkle-hover {
+      position: relative;
+      overflow: visible !important;
+      transition: transform 0.35s ease, box-shadow 0.35s ease, color 0.35s ease;
+    }
+
+    .gold-sprinkle-hover:hover {
+      transform: scale(1.03);
+      box-shadow:
+        0 0 20px rgba(198, 138, 40, 0.45),
+        0 0 40px rgba(198, 138, 40, 0.25);
+    }
+
+    /* Gold Particle */
+    .gold-particle {
+      position: absolute;
+      display: block;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 50;
+      background: #e2b04a;
+      box-shadow: 0 0 3px #fcedb8, 0 0 7px #e2b04a, 0 0 14px rgba(198, 138, 40, 0.9);
+      animation: goldenBurst var(--duration) cubic-bezier(.12,.7,.2,1) forwards;
+    }
+
+    @keyframes goldenBurst {
+      0% { opacity: 0; transform: translate3d(0, 0, 0) scale(0); }
+      8% { opacity: 1; transform: translate3d(0, 0, 0) scale(1.6); }
+      35% { opacity: 1; transform: translate3d(calc(var(--x) * 0.35), calc(var(--y) * 0.35), 0) scale(1); }
+      70% { opacity: 0.7; }
+      100% { opacity: 0; transform: translate3d(var(--x), var(--y), 0) scale(0.1); }
+    }
+
+    /* Tiny Gold Dust */
+    .gold-dust {
+      position: absolute;
+      width: 1.5px;
+      height: 1.5px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 50;
+      background: #e2b04a;
+      box-shadow: 0 0 4px #e2b04a, 0 0 8px rgba(198, 138, 40, 0.8);
+      animation: dustBurst var(--duration) ease-out forwards;
+    }
+
+    @keyframes dustBurst {
+      0% { opacity: 0; transform: translate3d(0, 0, 0) scale(0); }
+      15% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+      100% { opacity: 0; transform: translate3d(var(--x), var(--y), 0) scale(0); }
+    }
+
+    /* Golden Shockwave Ring */
+    .gold-ring {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 100%;
+      height: 100%;
+      border: 1px solid rgba(198, 138, 40, 0.9);
+      border-radius: inherit;
+      pointer-events: none;
+      z-index: 45;
+      transform: translate(-50%, -50%) scale(0.9);
+      animation: ringBurst 0.7s ease-out forwards;
+    }
+
+    @keyframes ringBurst {
+      0% { opacity: 0.9; transform: translate(-50%, -50%) scale(0.9); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.55); }
+    }
+
+    /* SCROLL REVEAL ANIMATIONS */
+    .reveal-up {
+      opacity: 0;
+      transform: translateY(45px);
+      transition: opacity 1.1s cubic-bezier(0.16, 1, 0.3, 1), transform 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+    .reveal-up.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* HERO INSIDE-TO-OUT TEXT ANIMATIONS */
+    .hero-reveal-scale {
+      opacity: 0;
+      transform: scale(0.85) translateY(30px);
+      filter: blur(8px);
+      transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), filter 1.2s ease;
+      will-change: opacity, transform, filter;
+    }
+    .hero-reveal-scale.active {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      filter: blur(0);
+    }
+
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.25s; }
+    .delay-3 { transition-delay: 0.4s; }
+    .delay-4 { transition-delay: 0.55s; }
+    .delay-5 { transition-delay: 0.7s; }
+
+    /* LARGE PRELOADER */
+    #pageLoader {
+      position: fixed;
+      inset: 0;
+      background: #07090c;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s ease;
+    }
+
+    #pageLoader.loaded {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-logo-wrap {
+      position: relative;
+      width: 170px; height: 170px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .loader-ring {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      border-top-color: var(--accent-gold-dark);
+      border-right-color: var(--accent-gold-glow);
+      animation: spinRing 1.4s linear infinite;
+      box-shadow: 0 0 20px rgba(198, 138, 40, 0.6);
+    }
+
+    @keyframes spinRing {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loader-logo-img {
+      width: 110px; height: auto;
+      filter: brightness(0) invert(1) drop-shadow(0 0 25px rgba(255, 255, 255, 1));
+    }
+
+    .loader-text {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      letter-spacing: 7px;
+      text-transform: uppercase;
+      color: var(--accent-gold-glow);
+      font-weight: 800;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 0 15px rgba(198, 138, 40, 0.6);
+    }
+
+    /* BACKGROUND PHOTO: COVERS ENTIRE WEBSITE, CLEAR, POSITIONED BELOW NAVBAR */
+    body::before {
+      content: "";
+      position: fixed; 
+      top: 90px; 
+      left: 0; 
+      right: 0; 
+      bottom: 0;
+      background: url('https://res.cloudinary.com/daarlhq52/image/upload/v1788949060/arunbgimge_d1tfbg.png') no-repeat center top;
+      background-size: cover;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    img { max-width: 100%; height: auto; display: block; }
+
+    /* MUSIC CAPSULE */
+    .floating-music-capsule {
+      position: fixed;
+      bottom: max(20px, env(safe-area-inset-bottom));
+      left: max(20px, env(safe-area-inset-left));
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-glass);
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0.75rem 1.3rem;
+      border-radius: 50px;
+      cursor: pointer;
+      z-index: 99;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 18px rgba(198, 138, 40, 0.25);
+      transition: all 0.3s ease;
+    }
+    .floating-music-capsule:hover { border-color: var(--border-glass-hover); background: var(--bg-card-hover); transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.9), 0 0 25px rgba(198, 138, 40, 0.45); }
+
+    .music-logo-icon {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: rgba(198, 138, 40, 0.25);
+      border: 1px solid var(--accent-gold-dark);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent-gold-glow);
+      transition: all 0.3s ease;
+    }
+    .floating-music-capsule:hover .music-logo-icon { background: var(--accent-gold-glow); color: #07090c; border-color: var(--accent-gold-glow); box-shadow: 0 0 15px var(--accent-gold-glow); }
+    .floating-music-capsule.playing .music-logo-icon { background: var(--accent-gold-glow); color: #07090c; border-color: var(--accent-gold-glow); box-shadow: 0 0 15px var(--accent-gold-glow); }
+    .music-capsule-text { font-size: 0.88rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--accent-gold-glow); transition: color 0.3s ease; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9); }
+    .floating-music-capsule:hover .music-capsule-text { color: var(--accent-gold-light); }
+
+    /* HEADER */
+    header {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 1.2rem 3rem;
+      display: flex; justify-content: space-between; align-items: center;
+      background: #090d13;
+      z-index: 100;
+      border-bottom: 1.5px solid rgba(198, 138, 40, 0.4);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.8);
+    }
+    .brand-logo-only img { 
+      height: 52px; 
+      width: auto; 
+      filter: brightness(0) invert(1) drop-shadow(0 0 12px rgba(255, 255, 255, 0.9)); 
+    }
+    
+    .desktop-nav { display: flex; gap: 2.8rem; }
+    .desktop-nav a { font-size: 0.95rem; letter-spacing: 2px; text-transform: uppercase; color: var(--accent-gold-glow); font-weight: 750; transition: color 0.3s ease; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 0 10px rgba(198, 138, 40, 0.5); padding: 0.2rem 0.5rem; border-radius: 4px; background: transparent !important; }
+    .desktop-nav a:hover, .desktop-nav a.active { color: var(--accent-gold-light); text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 18px rgba(253, 222, 137, 0.9); background: transparent !important; }
+
+    @media (max-width: 900px) {
+      header { padding: 1rem 1.5rem; }
+      .desktop-nav { display: none; }
+    }
+
+    /* CIRCULAR ACTION BUTTONS */
+    .circular-action-btn {
+      position: relative;
+      width: 68px; height: 68px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #18202c 0%, #080b10 100%);
+      border: 1.5px solid #c68a28;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 25px rgba(198, 138, 40, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.15);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      flex-shrink: 0;
+      overflow: visible;
+    }
+    .circular-action-btn i, .circular-action-btn span {
+      color: var(--accent-gold-glow);
+      font-size: 1.25rem;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 6px rgba(198, 138, 40, 0.8));
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+    .circular-action-btn::before {
+      content: "";
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 1.5px dashed rgba(198, 138, 40, 0.7);
+      animation: rotateDash 18s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes rotateDash {
+      100% { transform: rotate(360deg); }
+    }
+    .circular-action-btn:hover {
+      transform: scale(1.08);
+      border-color: #fddc69;
+      box-shadow: 0 0 40px rgba(198, 138, 40, 0.7), 0 0 15px rgba(253, 220, 105, 0.5);
+    }
+    .circular-action-btn:hover i {
+      transform: translate(2px, -2px) scale(1.1);
+      color: var(--accent-gold-light);
+    }
+
+    .admin-trigger-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-glass);
+      padding: 0.35rem 1.1rem 0.35rem 0.4rem;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+      transition: all 0.3s ease;
+    }
+    .admin-trigger-wrap:hover { border-color: var(--border-glass-hover); background: var(--bg-card-hover); box-shadow: 0 0 22px rgba(198, 138, 40, 0.45); }
+    .admin-trigger-text { font-size: 0.88rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 800; color: var(--accent-gold-glow); transition: color 0.3s ease; text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 0 10px rgba(198,138,40,0.5); }
+    .admin-trigger-wrap:hover .admin-trigger-text { color: var(--accent-gold-light); text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 0 15px rgba(253,222,137,0.8); }
+
+    /* ADMIN MODAL */
+    .admin-modal {
+      position: fixed; inset: 0;
+      background: rgba(4, 6, 9, 0.95);
+      z-index: 1000;
+      display: none;
+      align-items: center; justify-content: center;
+      padding: 1.5rem;
+    }
+    .admin-modal.active { display: flex; }
+    .admin-box {
+      background: #0b0e14;
+      border: 2px solid var(--accent-gold-dark);
+      border-radius: 18px;
+      width: 100%; max-width: 780px; max-height: 90vh;
+      overflow-y: auto;
+      padding: 2.8rem;
+      box-shadow: 0 30px 70px rgba(0,0,0,0.95), 0 0 40px rgba(198, 138, 40, 0.4);
+    }
+    .admin-box h3 { font-family: var(--font-display); font-size: 1.85rem; margin-bottom: 1.2rem; color: var(--accent-gold-glow); text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 0 18px rgba(198, 138, 40, 0.7); }
+    .form-group { margin-bottom: 1.4rem; }
+    .form-group label { display: block; font-size: 0.92rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0.5rem; color: var(--accent-gold-light); font-weight: 750; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(198,138,40,0.4); }
+    .form-group input, .form-group textarea { width: 100%; padding: 0.95rem 1.15rem; background: #07090c; border: 1.5px solid var(--border-glass); border-radius: 8px; color: #fff; font-size: 1.05rem; font-family: inherit; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--accent-gold-glow); box-shadow: 0 0 15px rgba(198, 138, 40, 0.6); outline: none; }
+    
+    .admin-btn {
+      background: transparent !important;
+      color: var(--accent-gold-glow) !important;
+      border: 1.5px solid var(--accent-gold-dark);
+      padding: 0.9rem 1.7rem;
+      font-weight: 800;
+      border-radius: 8px;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-size: 0.92rem;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 15px rgba(198, 138, 40, 0.25);
+      transition: all 0.3s ease;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 0 10px rgba(198, 138, 40, 0.5);
+    }
+    .admin-btn:hover {
+      background: transparent !important;
+      color: #ffffff !important;
+      border-color: #ffffff !important;
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.5), 0 0 10px rgba(198, 138, 40, 0.5);
+      transform: translateY(-2px);
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 0 15px rgba(255, 255, 255, 0.9);
+    }
+
+    .admin-btn-secondary {
+      background: transparent !important;
+      color: var(--accent-gold-glow) !important;
+      border: 1.5px solid rgba(198, 138, 40, 0.5);
+      margin-left: 0.5rem;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 0 10px rgba(198, 138, 40, 0.5);
+    }
+    .admin-btn-secondary:hover {
+      background: transparent !important;
+      color: #ffffff !important;
+      border-color: #ffffff !important;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 0 15px rgba(255, 255, 255, 0.9);
+    }
+
+    .admin-btn-danger {
+      background: transparent !important;
+      color: var(--accent-gold-glow) !important;
+      border: 1.5px solid #dc2626;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.82rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 800;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.95), 0 0 8px rgba(198, 138, 40, 0.5);
+    }
+    .admin-btn-danger:hover {
+      background: transparent !important;
+      color: #ffffff !important;
+      border-color: #ffffff !important;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 0 15px rgba(255, 255, 255, 0.9);
+    }
+
+    .admin-manage-list {
+      background: #07090c;
+      border: 1.5px solid var(--border-glass);
+      border-radius: 8px;
+      padding: 1rem;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 1.5rem;
+    }
+    .manage-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .manage-item-row:last-child { border-bottom: none; }
+    .manage-item-info { display: flex; align-items: center; gap: 0.9rem; overflow: hidden; }
+    .manage-item-info img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; flex-shrink: 0; border: 1px solid var(--accent-gold-dark); }
+    .manage-item-info span { font-size: 1rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 320px; }
+
+    /* HERO SECTION */
+    .hero { min-height: 96vh; padding: 13rem 2rem 6rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+    .hero-subtitle-top { font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 7px; text-transform: uppercase; color: var(--accent-gold-glow); margin-bottom: 1.2rem; font-weight: 800; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 20px rgba(198, 138, 40, 0.8); }
+    
+    .hero-title { font-family: var(--font-display); font-size: clamp(3.8rem, 9.5vw, 7.5rem); letter-spacing: 14px; font-weight: 900; color: var(--accent-gold-glow); margin-bottom: 1.4rem; text-shadow: 0 3px 12px rgba(0, 0, 0, 0.98), 0 0 45px rgba(198, 138, 40, 0.85); }
+    .hero-desc { font-size: clamp(1.2rem, 2.5vw, 1.55rem); color: var(--text-muted); max-width: 820px; margin-bottom: 2.5rem; font-weight: 400; line-height: 1.95; text-shadow: 0 2px 10px rgba(0,0,0,0.9); }
+    
+    .hero-badges-row {
+      display: flex;
+      gap: 2.2rem;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2.8rem;
+    }
+    
+    .hero-badge-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.02rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent-gold-glow);
+      font-weight: 800;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.98), 0 0 15px rgba(198, 138, 40, 0.7);
+    }
+    .hero-badge-item i { 
+      color: var(--accent-gold-glow); 
+      font-size: 1.25rem; 
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.95)) drop-shadow(0 0 8px rgba(198, 138, 40, 0.9)); 
+    }
+
+    .hero-buttons-wrap { display: flex; gap: 1.8rem; align-items: center; justify-content: center; flex-wrap: wrap; margin-top: 0.5rem; }
+    
+    .hero-btn-pill-transparent {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--bg-card) !important;
+      border: 1.5px solid var(--accent-gold-dark);
+      padding: 0.75rem 2.2rem 0.75rem 0.85rem;
+      border-radius: 50px;
+      color: var(--accent-gold-glow);
+      font-size: 1.02rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7), 0 0 18px rgba(198, 138, 40, 0.3);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 0 10px rgba(198, 138, 40, 0.5);
+    }
+    .hero-btn-pill-transparent:hover {
+      background: var(--bg-card-hover) !important;
+      color: var(--accent-gold-light) !important;
+      border-color: var(--border-glass-hover) !important;
+      transform: translateY(-4px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.85), 0 0 25px rgba(253, 222, 137, 0.5);
+    }
+
+    /* SECTIONS */
+    section { padding: 6.5rem 2rem; max-width: 1400px; margin: 0 auto; }
+    .section-header { display: flex; align-items: baseline; gap: 1.8rem; margin-bottom: 4rem; flex-wrap: wrap; }
+    .section-num { font-family: var(--font-display); font-size: 2.8rem; color: var(--accent-gold-glow); font-weight: 800; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 20px rgba(198, 138, 40, 0.6); }
+    .section-title-wrap span { font-size: 0.95rem; letter-spacing: 4px; font-weight: 800; text-transform: uppercase; color: var(--accent-gold-glow); display: block; margin-bottom: 0.5rem; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 0 12px rgba(198, 138, 40, 0.6); }
+    .section-title-wrap h2 { font-family: var(--font-display); font-size: clamp(2.6rem, 4.8vw, 3.8rem); font-weight: 800; color: var(--accent-gold-glow); text-shadow: 0 3px 10px rgba(0, 0, 0, 0.95), 0 0 35px rgba(198, 138, 40, 0.8); }
+
+    /* ENHANCED THREE-COLUMN ABOUT SECTION */
+    .about-three-col-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px 1fr;
+      gap: 3.5rem;
+      align-items: center;
+      margin-bottom: 4rem;
+    }
+    @media (max-width: 1024px) {
+      .about-three-col-layout {
+        grid-template-columns: 1fr;
+        max-width: 650px;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+        gap: 2.5rem;
+      }
+    }
+    .about-side-box {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-glass);
+      padding: 2.5rem 2rem;
+      border-radius: 18px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.7), 0 0 22px rgba(198, 138, 40, 0.25);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .about-side-box:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-glass-hover);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.85), 0 0 30px rgba(253, 222, 137, 0.4);
+      transform: translateY(-5px);
+    }
+    .about-side-box h4 {
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      color: var(--accent-gold-glow);
+      margin-bottom: 1rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 0 12px rgba(198, 138, 40, 0.6);
+    }
+    .about-side-box p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      line-height: 2.1;
+      font-weight: 400;
+    }
+
+    .about-middle-img-wrap {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid var(--accent-gold-dark);
+      box-shadow: 0 30px 65px rgba(0,0,0,0.9), 0 0 40px rgba(198, 138, 40, 0.6);
+      background: var(--bg-card);
+      aspect-ratio: 4 / 5;
+      width: 100%;
+    }
+    .about-middle-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .about-middle-img-wrap:hover img {
+      transform: scale(1.06);
+    }
+
+    .about-content-extra {
+      margin-top: 4rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2.2rem;
+    }
+    .about-info-box {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-glass);
+      padding: 2.5rem;
+      border-radius: 18px;
+      transition: all 0.3s ease;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.6), 0 0 18px rgba(198, 138, 40, 0.25);
+    }
+    .about-info-box:hover { background: var(--bg-card-hover); border-color: var(--border-glass-hover); transform: translateY(-6px); box-shadow: 0 20px 45px rgba(0,0,0,0.8), 0 0 25px rgba(253, 222, 137, 0.4); }
+    .about-info-box h5 {
+      color: var(--accent-gold-glow);
+      font-size: 1.25rem;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      margin-bottom: 1rem;
+      font-weight: 800;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 0 14px rgba(198, 138, 40, 0.6);
+    }
+    .about-info-box p {
+      font-size: 1.08rem;
+      color: var(--accent-gold-light);
+      line-height: 1.9;
+      font-weight: 500;
+    }
+
+    /* GALLERY */
+    .gallery-container { width: 100vw; margin-left: calc(-50vw + 50%); overflow: hidden; position: relative; padding: 2.5rem 0; }
+    .gallery-track { display: flex; align-items: center; gap: 2rem; width: max-content; animation: autoScroll 35s linear infinite; }
+    .gallery-track:hover { animation-play-state: paused; }
+    @keyframes autoScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    .gallery-item { height: 400px; border-radius: 18px; overflow: hidden; border: 1.5px solid var(--border-glass); background: var(--bg-card); flex-shrink: 0; box-shadow: 0 15px 40px rgba(0,0,0,0.7), 0 0 22px rgba(198, 138, 40, 0.3); transition: all 0.3s ease; }
+    .gallery-item:hover { border-color: var(--border-glass-hover); box-shadow: 0 20px 50px rgba(0,0,0,0.85), 0 0 30px rgba(253, 222, 137, 0.5); }
+    .gallery-item img { height: 100%; width: auto; object-fit: cover; }
+
+    /* ALBUMS */
+    .albums-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2.5rem; }
+    .album-card { background: var(--bg-card); border-radius: 20px; border: 1.5px solid var(--border-glass); overflow: hidden; box-shadow: 0 22px 50px rgba(0,0,0,0.8); transition: all 0.3s ease; }
+    .album-card:hover { background: var(--bg-card-hover); border-color: var(--border-glass-hover); transform: translateY(-6px); box-shadow: 0 30px 65px rgba(0,0,0,0.9), 0 0 35px rgba(253, 222, 137, 0.45); }
+    .album-thumb { height: 300px; position: relative; overflow: hidden; }
+    .album-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+    .album-card:hover .album-thumb img { transform: scale(1.06); }
+    .album-info { padding: 2rem; display: flex; justify-content: space-between; align-items: center; }
+    .album-info h4 { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.4rem; color: var(--accent-gold-glow); text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 0 14px rgba(198, 138, 40, 0.6); }
+    .album-meta { font-size: 0.92rem; color: var(--accent-gold-dark); letter-spacing: 1.5px; text-transform: uppercase; font-weight: 800; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 10px rgba(198, 138, 40, 0.5); }
+
+    /* CONTACT SECTION */
+    .contact-info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+      gap: 2.5rem;
+      margin-top: 4rem;
+      max-width: 1150px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .contact-card-box {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-glass);
+      border-radius: 20px;
+      padding: 3.2rem 2.2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.75), 0 0 22px rgba(198, 138, 40, 0.3);
+    }
+    .contact-card-box:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-glass-hover);
+      transform: translateY(-6px);
+      box-shadow: 0 25px 55px rgba(0,0,0,0.85), 0 0 35px rgba(253, 222, 137, 0.45);
+    }
+    .contact-card-box h4 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      margin-bottom: 0.7rem;
+      color: var(--accent-gold-glow);
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 0 16px rgba(198, 138, 40, 0.7);
+    }
+    .contact-card-box p {
+      font-size: 1.1rem;
+      color: var(--accent-gold-light);
+      margin-bottom: 2rem;
+      font-weight: 500;
+    }
+
+    /* LUXURY GOLDEN WHATSAPP BUTTON */
+    .floating-wa { 
+      position: fixed; bottom: 25px; right: 25px; width: 64px; height: 64px; border-radius: 50%; 
+      background: radial-gradient(circle at 35% 35%, #18202c 0%, #080b10 100%); 
+      border: 1.5px solid #c68a28; color: #c68a28; display: flex; align-items: center; justify-content: center; 
+      font-size: 2rem; z-index: 99; box-shadow: 0 12px 30px rgba(198, 138, 40, 0.4), 0 0 22px rgba(198, 138, 40, 0.45); 
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+    }
+    .floating-wa:hover { 
+      transform: scale(1.12); 
+      border-color: #fddc69; 
+      color: #fddc69; 
+      box-shadow: 0 15px 40px rgba(198, 138, 40, 0.65), 0 0 25px rgba(253, 220, 105, 0.55); 
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CUSTOM CURSOR -->
+  <div class="custom-cursor-dot" id="cursorDot"></div>
+  <div class="custom-cursor-ring" id="cursorRing"></div>
+
+  <!-- AUDIO -->
+  <audio id="bgMusic" loop preload="auto">
+    <source src="https://res.cloudinary.com/daarlhq52/video/upload/v1788953488/atlasaudio-elegant-522420_NSavB1Rx_dbyko6.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- MUSIC TOGGLE -->
+  <div id="musicToggleBtn" class="floating-music-capsule gold-sprinkle-hover" role="button">
+    <div class="music-logo-icon"><i class="fa-solid fa-music"></i></div>
+    <span class="music-capsule-text" id="musicStatusText">Click to feel music</span>
+  </div>
+
+  <!-- LARGE PRELOADER -->
+  <div id="pageLoader">
+    <div class="loader-logo-wrap">
+      <div class="loader-ring"></div>
+      <img class="loader-logo-img" src="https://res.cloudinary.com/daarlhq52/image/upload/v1788944962/WhatsApp_Image_2026-09-09_at_1.35.21_PM-removebg-preview_dezfsc.png" alt="Arun Photography Logo">
+    </div>
+    <div class="loader-text">Arun Photography</div>
+  </div>
+
+  <!-- WHATSAPP -->
+  <a href="https://wa.me/919603204044" target="_blank" class="floating-wa gold-sprinkle-hover" aria-label="WhatsApp Chat">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+
+  <!-- HEADER -->
+  <header>
+    <a href="#home" class="brand-logo-only">
+      <img src="https://res.cloudinary.com/daarlhq52/image/upload/v1788944962/WhatsApp_Image_2026-09-09_at_1.35.21_PM-removebg-preview_dezfsc.png" alt="Arun Photography Logo">
+    </a>
+    <nav class="desktop-nav">
+      <a href="#home" class="active gold-sprinkle-hover">Home</a>
+      <a href="#gallery" class="gold-sprinkle-hover">Gallery</a>
+      <a href="#about" class="gold-sprinkle-hover">About</a>
+      <a href="#albums" class="gold-sprinkle-hover">Albums</a>
+      <a href="#contact" class="gold-sprinkle-hover">Contact</a>
+    </nav>
+    <div class="admin-trigger-wrap gold-sprinkle-hover" id="openAdminModalBtn" role="button">
+      <div class="circular-action-btn" style="width: 46px; height: 46px;">
+        <i class="fa-solid fa-arrow-right"></i>
+      </div>
+      <span class="admin-trigger-text">Admin Portal</span>
+    </div>
+  </header>
+
+  <!-- ADMIN MODAL -->
+  <div class="admin-modal" id="adminModal">
+    <div class="admin-box">
+      <div id="authContainer">
+        <h3>Admin Authentication</h3>
+        <p style="color: var(--accent-gold-light); font-size: 1.02rem; margin-bottom: 1.6rem; font-weight: 500;">Enter admin credentials to manage content.</p>
+        <div class="form-group">
+          <label>Admin Email</label>
+          <input type="email" id="adminEmail" placeholder="admin@arunphotography.com">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="adminPassword" placeholder="••••••••">
+        </div>
+        <button class="admin-btn gold-sprinkle-hover" id="loginBtn">Login</button>
+        <button class="admin-btn admin-btn-secondary gold-sprinkle-hover" id="closeModalBtn">Cancel</button>
+      </div>
+
+      <div id="dashboardContainer" style="display: none; text-align: center;">
+        <h3 style="font-family: var(--font-display); font-size: 2.2rem; letter-spacing: 3px; color: var(--accent-gold-glow); margin-bottom: 1.5rem; text-shadow: 0 2px 8px rgba(0,0,0,0.95), 0 0 20px rgba(198,138,40,0.8);">W e l c o m e     A d m i n !!!</h3>
+        <p style="color: var(--accent-gold-glow); font-size: 1.05rem; margin-bottom: 1.6rem; font-weight: 600;">Add or delete live gallery photos and photo albums.</p>
+        
+        <!-- Add Gallery Image -->
+        <div style="border-top: 1px solid var(--border-glass); padding-top: 1.6rem; margin-bottom: 1.6rem; text-align: left;">
+          <h4 style="font-size: 1.15rem; margin-bottom: 0.9rem; color: var(--accent-gold-light); font-weight: 800;">Add Gallery Image URL</h4>
+          <div class="form-group">
+            <input type="text" id="newGalleryImgUrl" placeholder="https://res.cloudinary.com/...">
+          </div>
+          <button class="admin-btn gold-sprinkle-hover" id="addGalleryImgBtn">Add to Gallery</button>
+        </div>
+
+        <!-- Manage Existing Gallery Images -->
+        <div style="border-top: 1px solid var(--border-glass); padding-top: 1.6rem; margin-bottom: 1.6rem; text-align: left;">
+          <h4 style="font-size: 1.15rem; margin-bottom: 0.9rem; color: var(--accent-gold-light); font-weight: 800;">Manage Existing Gallery Images</h4>
+          <div class="admin-manage-list" id="manageGalleryList"></div>
+        </div>
+
+        <!-- Add Multi-Image Album -->
+        <div style="border-top: 1px solid var(--border-glass); padding-top: 1.6rem; margin-bottom: 1.6rem; text-align: left;">
+          <h4 style="font-size: 1.15rem; margin-bottom: 0.9rem; color: var(--accent-gold-light); font-weight: 800;">Create Album (Up to 10 Images)</h4>
+          <div class="form-group">
+            <label>Album Title</label>
+            <input type="text" id="newAlbumTitle" placeholder="Cinematic Wedding Highlights">
+          </div>
+          <div class="form-group">
+            <label>Cover / Thumbnail Image URL</label>
+            <input type="text" id="newAlbumThumb" placeholder="https://res.cloudinary.com/...">
+          </div>
+          <div class="form-group">
+            <label>Additional Image URLs (Up to 9 more links, separated by commas)</label>
+            <textarea id="newAlbumImages" rows="2" placeholder="https://res.cloudinary.com/..."></textarea>
+          </div>
+          <button class="admin-btn gold-sprinkle-hover" id="addAlbumBtn">Create Album</button>
+        </div>
+
+        <!-- Manage Existing Albums -->
+        <div style="border-top: 1px solid var(--border-glass); padding-top: 1.6rem; margin-bottom: 1.6rem; text-align: left;">
+          <h4 style="font-size: 1.15rem; margin-bottom: 0.9rem; color: var(--accent-gold-light); font-weight: 800;">Manage Existing Albums</h4>
+          <div class="admin-manage-list" id="manageAlbumsList"></div>
+        </div>
+
+        <div style="text-align: left; margin-top: 2rem;">
+          <button class="admin-btn admin-btn-secondary gold-sprinkle-hover" id="logoutBtn">Logout</button>
+          <button class="admin-btn admin-btn-secondary gold-sprinkle-hover" id="closeDashboardBtn" style="float: right;">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO SECTION -->
+  <div class="hero" id="home">
+    <div class="hero-subtitle-top hero-reveal-scale delay-1">Professional Photo & Videographer</div>
+    <h1 class="hero-title hero-reveal-scale delay-2">ARUN</h1>
+    <p class="hero-desc hero-reveal-scale delay-3">Timeless frames. Authentic emotions. Your personal narrative captured with peerless cinematic elegance across weddings, portraits, and commercial campaigns.</p>
+    
+    <div class="hero-badges-row hero-reveal-scale delay-4">
+      <div class="hero-badge-item"><i class="fa-solid fa-camera-retro"></i> 5+ Years Experience</div>
+      <div class="hero-badge-item"><i class="fa-solid fa-location-dot"></i> VNPally & Telangana</div>
+      <div class="hero-badge-item"><i class="fa-solid fa-award"></i> Premium Quality Optics</div>
+    </div>
+
+    <div class="hero-buttons-wrap hero-reveal-scale delay-5">
+      <a href="#gallery" class="hero-btn-pill-transparent gold-sprinkle-hover">
+        <div class="circular-action-btn" style="width: 52px; height: 52px;">
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+        Explore Gallery
+      </a>
+      <a href="https://wa.me/919603204044?text=Hi%20Arun,%20I%20would%20like%20to%20book%20a%20session." target="_blank" class="hero-btn-pill-transparent gold-sprinkle-hover">
+        <div class="circular-action-btn" style="width: 52px; height: 52px;">
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+        Book a Session
+      </a>
+    </div>
+  </div>
+
+  <!-- GALLERY -->
+  <section id="gallery">
+    <div class="section-header reveal-up">
+      <div class="section-num">01</div>
+      <div class="section-title-wrap">
+        <span>Explore Gallery</span>
+        <h2>Moments in Frames</h2>
+      </div>
+    </div>
+    <div class="gallery-container reveal-up">
+      <div class="gallery-track" id="dynamicGalleryTrack"></div>
+    </div>
+  </section>
+
+  <!-- ABOUT SECTION WITH MIDDLE IMAGE & STYLISH DESCRIPTION BOXES -->
+  <section id="about">
+    <div class="section-header reveal-up">
+      <div class="section-num">02</div>
+      <div class="section-title-wrap">
+        <span>About Me</span>
+        <h2>The Artist Behind the Lens</h2>
+      </div>
+    </div>
+
+    <div class="about-three-col-layout reveal-up">
+      <!-- Left Box: Professional Vision Description -->
+      <div class="about-side-box gold-sprinkle-hover">
+        <h4>Vision & Passion</h4>
+        <p>
+          Every shutter click is a deliberate pause in time. My artistic philosophy centers on capturing authentic human emotion, ambient storytelling, and cinematic mastery across every commissioned frame.
+        </p>
+      </div>
+
+      <!-- Middle Box: Untouched Photo -->
+      <div class="about-middle-img-wrap gold-sprinkle-hover">
+        <img src="https://res.cloudinary.com/daarlhq52/image/upload/v1788945002/IMG_1114.JPG_qangvu.jpg" alt="Arun - Professional Photographer & Videographer">
+      </div>
+
+      <!-- Right Box: Professional Craftsmanship Description -->
+      <div class="about-side-box gold-sprinkle-hover">
+        <h4>Artistic Precision</h4>
+        <p>
+          Blending state-of-the-art optical technology with refined compositional aesthetics, I craft bespoke visual narratives that transform fleeting celebrations into timeless heritage pieces.
+        </p>
+      </div>
+    </div>
+
+    <div class="about-content-extra reveal-up">
+      <div class="about-info-box gold-sprinkle-hover">
+        <h5><i class="fa-solid fa-camera-retro"></i> Equipment & Setup</h5>
+        <p>Shooting with full-frame professional mirrorless camera systems, high-speed prime optics, and portable studio lighting setups for immaculate detail.</p>
+      </div>
+      <div class="about-info-box gold-sprinkle-hover">
+        <h5><i class="fa-solid fa-earth-americas"></i> Coverage Areas</h5>
+        <p>Available for destination weddings, outdoor portrait sessions, and corporate commissions across Telangana, Hyderabad, and surrounding regions.</p>
+      </div>
+      <div class="about-info-box gold-sprinkle-hover">
+        <h5><i class="fa-solid fa-star"></i> My Philosophy</h5>
+        <p>Photography is more than pointing a camera—it is about patience, observing light, and freezing raw moments that words fail to express.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ALBUMS -->
+  <section id="albums">
+    <div class="section-header reveal-up">
+      <div class="section-num">03</div>
+      <div class="section-title-wrap">
+        <span>Selected Works</span>
+        <h2>Photo Albums</h2>
+      </div>
+    </div>
+    <div class="albums-grid reveal-up" id="dynamicAlbumsGrid"></div>
+  </section>
+
+  <!-- CONTACT SECTION -->
+  <section id="contact">
+    <div class="section-header reveal-up" style="justify-content: center; text-align: center; margin-bottom: 1.5rem;">
+      <div class="section-title-wrap">
+        <span style="display: block; text-align: center;">Get In Touch</span>
+        <h2 style="font-size: clamp(2.8rem, 5.2vw, 4rem); margin-top: 0.5rem;">Let's Create Something Beautiful</h2>
+      </div>
+    </div>
+    <p class="reveal-up" style="text-align: center; color: var(--accent-gold-light); max-width: 720px; margin: 0 auto 3rem; font-size: 1.25rem; text-shadow: 0 2px 8px rgba(0,0,0,0.95); font-weight: 500;">
+      Ready to book your session or check date availability? Reach out directly through any of our active communication channels below.
+    </p>
+
+    <div class="contact-info-grid reveal-up">
+      <div class="contact-card-box gold-sprinkle-hover">
+        <h4>WhatsApp Chat</h4>
+        <p>Instant inquiries & booking</p>
+        <a href="https://wa.me/919603204044?text=Hi%20Arun,%20I%20would%20like%20to%20inquire%20about%20booking%20a%20session." target="_blank" class="circular-action-btn" aria-label="Open WhatsApp Chat">
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="contact-card-box gold-sprinkle-hover">
+        <h4>Instagram Portfolio</h4>
+        <p>Explore recent stories & DMs</p>
+        <a href="https://www.instagram.com/arun.raa1/" target="_blank" class="circular-action-btn" aria-label="Open Instagram Portfolio">
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="contact-card-box gold-sprinkle-hover">
+        <h4>Direct Email</h4>
+        <p>For commercial or long-term projects</p>
+        <a href="mailto:arunravan511@gmail.com" class="circular-action-btn" aria-label="Send Direct Email">
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCRIPTS -->
+  <script>
+    // 1. CUSTOM CURSOR
+    const cursorDot = document.getElementById('cursorDot');
+    const cursorRing = document.getElementById('cursorRing');
+    let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+    let ringX = mouseX, ringY = mouseY;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+    });
+
+    function renderCursor() {
+      ringX += (mouseX - ringX) * 0.18;
+      ringY += (mouseY - ringY) * 0.18;
+      cursorRing.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
+      requestAnimationFrame(renderCursor);
+    }
+    requestAnimationFrame(renderCursor);
+
+    // 2. GOLD PARTICLE HOVER SCRIPT INTEGRATION
+    function createGoldenParticles(e) {
+      const target = e.currentTarget;
+      const rect = target.getBoundingClientRect();
+      
+      const localX = e.clientX ? e.clientX - rect.left : rect.width / 2;
+      const localY = e.clientY ? e.clientY - rect.top : rect.height / 2;
+
+      // Main Gold Particles
+      for (let i = 0; i < 45; i++) {
+        const particle = document.createElement("i");
+        particle.className = "gold-particle";
+        
+        particle.style.left = `${localX}px`;
+        particle.style.top = `${localY}px`;
+
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 40 + Math.random() * 100;
+        const x = Math.cos(angle) * distance;
+        const y = Math.sin(angle) * distance;
+
+        particle.style.setProperty("--x", `${x}px`);
+        particle.style.setProperty("--y", `${y}px`);
+
+        const size = 1 + Math.random() * 2.5;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+
+        particle.style.setProperty("--duration", `${0.5 + Math.random() * 0.6}s`);
+
+        target.appendChild(particle);
+        setTimeout(() => particle.remove(), 1200);
+      }
+
+      // Micro Gold Dust
+      for (let i = 0; i < 30; i++) {
+        const dust = document.createElement("i");
+        dust.className = "gold-dust";
+
+        dust.style.left = `${localX}px`;
+        dust.style.top = `${localY}px`;
+
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 50 + Math.random() * 120;
+
+        dust.style.setProperty("--x", `${Math.cos(angle) * distance}px`);
+        dust.style.setProperty("--y", `${Math.sin(angle) * distance}px`);
+        dust.style.setProperty("--duration", `${0.6 + Math.random() * 0.7}s`);
+
+        target.appendChild(dust);
+        setTimeout(() => dust.remove(), 1500);
+      }
+
+      // Golden Shockwave Ring
+      const ring = document.createElement("div");
+      ring.className = "gold-ring";
+      target.appendChild(ring);
+      setTimeout(() => ring.remove(), 700);
+    }
+
+    document.querySelectorAll('.gold-sprinkle-hover').forEach(el => {
+      el.addEventListener('mouseenter', createGoldenParticles);
+    });
+
+    // 3. GUARANTEED ANIMATION TRIGGER ON LOAD & SCROLL
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('pageLoader').classList.add('loaded');
+        document.querySelectorAll('.hero-reveal-scale').forEach(el => {
+          el.classList.add('active');
+        });
+      }, 500);
+    });
+
+    const observerOptions = {
+      threshold: 0.08,
+      rootMargin: "0px 0px -30px 0px"
+    };
+
+    const scrollObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal-up').forEach(el => {
+      scrollObserver.observe(el);
+    });
+
+    // 4. FIREBASE CONFIGURATION & DYNAMIC CONTENT LOGIC
+    const firebaseConfig = {
+      apiKey: "AIzaSyDuRf4tjO6h6sm1oqB-uHQD_OHP4wi2x-c",
+      authDomain: "photography-website-f157d.firebaseapp.com",
+      databaseURL: "https://photography-website-f157d-default-rtdb.firebaseio.com",
+      projectId: "photography-website-f157d",
+      storageBucket: "photography-website-f157d.firebasestorage.app",
+      messagingSenderId: "171891046990",
+      appId: "1:171891046990:web:fac4a270e0de50dad5611f",
+      measurementId: "G-S0LC4VHPTC"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const defaultGallery = [
+      "https://res.cloudinary.com/tcyvwb2g/image/upload/v1789023382/7B1DB334-F147-4CEB-B1B9-D2A2B51AE965.jpg",
+      "https://res.cloudinary.com/tcyvwb2g/image/upload/v1789023382/D91A8017-6221-4118-B236-245A7FB6BC1E.jpg",
+      "https://res.cloudinary.com/tcyvwb2g/image/upload/v1789023385/ACE0A903-55F0-4C52-B879-49C5D060667B.jpg",
+      "https://res.cloudinary.com/tcyvwb2g/image/upload/v1789023383/DSC01207.jpg",
+      "https://res.cloudinary.com/tcyvwb2g/image/upload/v1789023387/DSC01209.jpg",
+      "https://res.cloudinary.com/tcyvwb2g/image/upload/v1789023384/EE1B8119-06F5-4FED-A9C3-BE96A7759C66.jpg",
+      "https://res.cloudinary.com/tcyvwb2g/image/upload/v1789023380/F6D10275-7538-41BE-A8F2-FA142848A2D5.jpg",
+      "https://res.cloudinary.com/tcyvwb2g/image/upload/v1789023381/555D7374-BC2A-4BFD-8304-0ADED66B10DA.jpg",
+      "https://res.cloudinary.com/tcyvwb2g/image/upload/v1789023385/9FE0E095-AE18-4562-AF0D-8B7C2F8E9F11.jpg"
+    ];
+
+    const defaultAlbums = [
+      { title: "Weddings & Events", thumb: "https://res.cloudinary.com/tcyvwb2g/image/upload/v1789023382/7B1DB334-F147-4CEB-B1B9-D2A2B51AE965.jpg", images: [] },
+      { title: "Portraits & Fashion", thumb: "https://res.cloudinary.com/tcyvwb2g/image/upload/v1789023382/D91A8017-6221-4118-B236-245A7FB6BC1E.jpg", images: [] },
+      { title: "Travel & Nature", thumb: "https://res.cloudinary.com/tcyvwb2g/image/upload/v1789023385/ACE0A903-55F0-4C52-B879-49C5D060667B.jpg", images: [] }
+    ];
+
+    let cachedGallery = [];
+    let cachedAlbums = [];
+
+    function renderGallery(images) {
+      cachedGallery = images.length ? images : defaultGallery;
+      const track = document.getElementById('dynamicGalleryTrack');
+      const fullList = [...cachedGallery, ...cachedGallery];
+      track.innerHTML = fullList.map(url => `<div class="gallery-item gold-sprinkle-hover"><img src="${url}" alt="Gallery Photo"></div>`).join('');
+      renderManageGalleryUI();
+    }
+
+    function renderAlbums(albums) {
+      cachedAlbums = albums.length ? albums : defaultAlbums;
+      const grid = document.getElementById('dynamicAlbumsGrid');
+      grid.innerHTML = cachedAlbums.map(album => {
+        const totalPhotos = 1 + (album.images ? album.images.length : 0);
+        return `
+          <div class="album-card gold-sprinkle-hover">
+            <div class="album-thumb"><img src="${album.thumb}" alt="${album.title}"></div>
+            <div class="album-info">
+              <div>
+                <h4>${album.title}</h4>
+                <span class="album-meta">${totalPhotos} Photos in Album</span>
+              </div>
+              <div class="circular-action-btn" style="width: 48px; height: 48px;">
+                <i class="fa-solid fa-arrow-right"></i>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      renderManageAlbumsUI();
+    }
+
+    function renderManageGalleryUI() {
+      const container = document.getElementById('manageGalleryList');
+      container.innerHTML = cachedGallery.map((url, index) => `
+        <div class="manage-item-row">
+          <div class="manage-item-info">
+            <img src="${url}" alt="Thumb">
+            <span>${url}</span>
+          </div>
+          <button class="admin-btn-danger gold-sprinkle-hover" onclick="deleteGalleryItem(${index})">Delete</button>
+        </div>
+      `).join('');
+    }
+
+    function renderManageAlbumsUI() {
+      const container = document.getElementById('manageAlbumsList');
+      container.innerHTML = cachedAlbums.map((album, index) => `
+        <div class="manage-item-row">
+          <div class="manage-item-info">
+            <img src="${album.thumb}" alt="Thumb">
+            <span>${album.title}</span>
+          </div>
+          <button class="admin-btn-danger gold-sprinkle-hover" onclick="deleteAlbumItem(${index})">Delete</button>
+        </div>
+      `).join('');
+    }
+
+    function loadSiteContent() {
+      db.collection("siteContent").doc("portfolio").get().then((doc) => {
+        if (doc.exists) {
+          const data = doc.data();
+          renderGallery(data.gallery || []);
+          renderAlbums(data.albums || []);
+        } else {
+          renderGallery(defaultGallery);
+          renderAlbums(defaultAlbums);
+        }
+      }).catch(() => {
+        renderGallery(defaultGallery);
+        renderAlbums(defaultAlbums);
+      });
+    }
+
+    loadSiteContent();
+
+    // 5. ADMIN ACTIONS
+    window.deleteGalleryItem = async function(index) {
+      if (!confirm("Are you sure you want to delete this gallery image?")) return;
+      cachedGallery.splice(index, 1);
+      const docRef = db.collection("siteContent").doc("portfolio");
+      await docRef.set({ gallery: cachedGallery }, { merge: true });
+      alert("Gallery image deleted successfully!");
+      loadSiteContent();
+    }
+
+    window.deleteAlbumItem = async function(index) {
+      if (!confirm("Are you sure you want to delete this album?")) return;
+      cachedAlbums.splice(index, 1);
+      const docRef = db.collection("siteContent").doc("portfolio");
+      await docRef.set({ albums: cachedAlbums }, { merge: true });
+      alert("Album deleted successfully!");
+      loadSiteContent();
+    }
+
+    // 6. ADMIN MODAL CONTROLS
+    const adminModal = document.getElementById('adminModal');
+    document.getElementById('openAdminModalBtn').addEventListener('click', () => adminModal.classList.add('active'));
+    document.getElementById('closeModalBtn').addEventListener('click', () => adminModal.classList.remove('active'));
+    document.getElementById('closeDashboardBtn').addEventListener('click', () => adminModal.classList.remove('active'));
+
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      const email = document.getElementById('adminEmail').value.trim();
+      const pass = document.getElementById('adminPassword').value.trim();
+      auth.signInWithEmailAndPassword(email, pass).then(() => {
+        document.getElementById('authContainer').style.display = 'none';
+        document.getElementById('dashboardContainer').style.display = 'block';
+      }).catch(err => alert("Login Failed: " + err.message));
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      auth.signOut().then(() => {
+        document.getElementById('authContainer').style.display = 'block';
+        document.getElementById('dashboardContainer').style.display = 'none';
+        adminModal.classList.remove('active');
+      });
+    });
+
+    document.getElementById('addGalleryImgBtn').addEventListener('click', async () => {
+      const url = document.getElementById('newGalleryImgUrl').value.trim();
+      if (!url) return alert("Please enter a valid image URL");
+      
+      cachedGallery.push(url);
+      const docRef = db.collection("siteContent").doc("portfolio");
+      await docRef.set({ gallery: cachedGallery }, { merge: true });
+      alert("Gallery image added successfully!");
+      document.getElementById('newGalleryImgUrl').value = "";
+      loadSiteContent();
+    });
+
+    document.getElementById('addAlbumBtn').addEventListener('click', async () => {
+      const title = document.getElementById('newAlbumTitle').value.trim();
+      const thumb = document.getElementById('newAlbumThumb').value.trim();
+      const rawImages = document.getElementById('newAlbumImages').value.trim();
+      
+      if (!title || !thumb) return alert("Please provide at least an Album Title and Cover Thumbnail URL.");
+
+      let additionalImages = rawImages ? rawImages.split(/[\n,]+/).map(s => s.trim()).filter(s => s.length > 0) : [];
+      if (additionalImages.length > 9) {
+        additionalImages = additionalImages.slice(0, 9);
+      }
+
+      cachedAlbums.push({ 
+        title: title, 
+        thumb: thumb, 
+        images: additionalImages 
+      });
+
+      const docRef = db.collection("siteContent").doc("portfolio");
+      await docRef.set({ albums: cachedAlbums }, { merge: true });
+      alert("Album added successfully!");
+      
+      document.getElementById('newAlbumTitle').value = "";
+      document.getElementById('newAlbumThumb').value = "";
+      document.getElementById('newAlbumImages').value = "";
+      
+      loadSiteContent();
+    });
+
+    // Music Trigger
+    const bgMusic = document.getElementById('bgMusic');
+    let isPlaying = false;
+    document.getElementById('musicToggleBtn').addEventListener('click', () => {
+      if (!isPlaying) {
+        bgMusic.play();
+        isPlaying = true;
+        document.getElementById('musicStatusText').textContent = "Playing Music ♪";
+      } else {
+        bgMusic.pause();
+        isPlaying = false;
+        document.getElementById('musicStatusText').textContent = "Click to feel music";
+      }
+    });
+  </script>
+</body>
+</html>
