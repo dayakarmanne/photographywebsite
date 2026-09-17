@@ -56,6 +56,7 @@
       width: 100%;
       min-height: 100%;
       overflow-x: hidden;
+      scroll-behavior: smooth;
     }
 
     @media (hover: hover) and (pointer: fine) {
@@ -103,7 +104,7 @@
     }
 
     /* =========================================================
-        GOLD PARTICLE HOVER SYSTEM
+        GOLD PARTICLE HOVER & TOUCH SYSTEM
     ========================================================= */
     .gold-sprinkle-hover {
       position: relative;
@@ -111,7 +112,7 @@
       transition: transform 0.35s ease, box-shadow 0.35s ease, color 0.35s ease;
     }
 
-    .gold-sprinkle-hover:hover {
+    .gold-sprinkle-hover:hover, .gold-sprinkle-hover:active {
       transform: scale(1.03);
       box-shadow:
         0 0 20px rgba(198, 138, 40, 0.45),
@@ -265,7 +266,7 @@
       text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 0 15px rgba(198, 138, 40, 0.6);
     }
 
-    /* BACKGROUND PHOTO: COVERS ENTIRE WEBSITE, CLEAR, POSITIONED BELOW NAVBAR */
+    /* BACKGROUND PHOTO FIX: STARTS BELOW NAVBAR & FULLY CONTAINED (NO STRETCHING/CROPPING) */
     body::before {
       content: "";
       position: fixed; 
@@ -273,8 +274,8 @@
       left: 0; 
       right: 0; 
       bottom: 0;
-      background: url('https://res.cloudinary.com/daarlhq52/image/upload/v1788949060/arunbgimge_d1tfbg.png') no-repeat center top;
-      background-size: cover;
+      background: url('https://res.cloudinary.com/daarlhq52/image/upload/v1788949060/arunbgimge_d1tfbg.png') no-repeat center center;
+      background-size: contain;
       z-index: -1;
       pointer-events: none;
     }
@@ -317,6 +318,7 @@
     /* HEADER */
     header {
       position: fixed; top: 0; left: 0; right: 0;
+      height: 90px;
       padding: 1.2rem 3rem;
       display: flex; justify-content: space-between; align-items: center;
       background: #090d13;
@@ -335,7 +337,8 @@
     .desktop-nav a:hover, .desktop-nav a.active { color: var(--accent-gold-light); text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 18px rgba(253, 222, 137, 0.9); background: transparent !important; }
 
     @media (max-width: 900px) {
-      header { padding: 1rem 1.5rem; }
+      header { padding: 1rem 1.5rem; height: 80px; }
+      body::before { top: 80px; }
       .desktop-nav { display: none; }
     }
 
@@ -823,7 +826,7 @@
       </div>
 
       <div id="dashboardContainer" style="display: none; text-align: center;">
-        <h3 style="font-family: var(--font-display); font-size: 2.2rem; letter-spacing: 3px; color: var(--accent-gold-glow); margin-bottom: 1.5rem; text-shadow: 0 2px 8px rgba(0,0,0,0.95), 0 0 20px rgba(198,138,40,0.8);">W e l c o m e     A d m i n !!!</h3>
+        <h3 style="font-family: var(--font-display); font-size: 2.2rem; letter-spacing: 3px; color: var(--accent-gold-glow); margin-bottom: 1.5rem; text-shadow: 0 2px 8px rgba(0,0,0,0.95), 0 0 20px rgba(198,138,40,0.8);">W e l c o m e    A d m i n !!!</h3>
         <p style="color: var(--accent-gold-glow); font-size: 1.05rem; margin-bottom: 1.6rem; font-weight: 600;">Add or delete live gallery photos and photo albums.</p>
         
         <!-- Add Gallery Image -->
@@ -1037,13 +1040,16 @@
     }
     requestAnimationFrame(renderCursor);
 
-    // 2. GOLD PARTICLE HOVER SCRIPT INTEGRATION
+    // 2. GOLD PARTICLE HOVER & MOBILE TOUCH SCRIPT INTEGRATION
     function createGoldenParticles(e) {
       const target = e.currentTarget;
       const rect = target.getBoundingClientRect();
       
-      const localX = e.clientX ? e.clientX - rect.left : rect.width / 2;
-      const localY = e.clientY ? e.clientY - rect.top : rect.height / 2;
+      const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : null);
+      const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : null);
+
+      const localX = clientX ? clientX - rect.left : rect.width / 2;
+      const localY = clientY ? clientY - rect.top : rect.height / 2;
 
       // Main Gold Particles
       for (let i = 0; i < 45; i++) {
@@ -1099,6 +1105,7 @@
 
     document.querySelectorAll('.gold-sprinkle-hover').forEach(el => {
       el.addEventListener('mouseenter', createGoldenParticles);
+      el.addEventListener('touchstart', createGoldenParticles, { passive: true });
     });
 
     // 3. GUARANTEED ANIMATION TRIGGER ON LOAD & SCROLL
