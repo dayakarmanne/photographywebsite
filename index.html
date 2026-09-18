@@ -67,15 +67,24 @@
       position: relative;
     }
 
-    /* BACKGROUND IMAGE FULLY VISIBLE ACROSS ALL DEVICES */
+    /* BACKGROUND IMAGE STARTS BELOW THE 85px NAVBAR, COVERS ENTIRE WEBSITE PROFICIENTLY */
     body::before {
       content: "";
       position: fixed;
-      inset: 0;
-      background: url('https://res.cloudinary.com/daarlhq52/image/upload/v1788949060/arunbgimge_d1tfbg.png') no-repeat center center;
-      background-size: contain;
+      top: 85px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('https://res.cloudinary.com/daarlhq52/image/upload/v1788949060/arunbgimge_d1tfbg.png') no-repeat center top;
+      background-size: cover;
       z-index: -1;
       pointer-events: none;
+    }
+
+    @media (max-width: 992px) {
+      body::before {
+        top: 75px;
+      }
     }
 
     /* CUSTOM CURSOR WITH GLOW */
@@ -106,29 +115,6 @@
 
     @media (hover: none) or (pointer: coarse) {
       .custom-cursor-dot, .custom-cursor-ring { display: none !important; }
-    }
-
-    /* CINEMATIC INTRO VIDEO OVERLAY (REMOVED WATERMARK MASKS) */
-    #introVideoContainer {
-      position: fixed;
-      inset: 0;
-      background: #000;
-      z-index: 100000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      transition: opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 1.4s ease;
-    }
-    #introVideoContainer.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-    #introVideoContainer video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
     }
 
     /* GOLD PARTICLE HOVER & TOUCH SYSTEM */
@@ -517,13 +503,6 @@
 </head>
 <body>
 
-  <!-- CINEMATIC VIDEO INTRO OVERLAY (SMOOTH & SLOW MOTION, WATERMARK MASKS REMOVED) -->
-  <div id="introVideoContainer">
-    <video id="introVideo" autoplay muted playsinline>
-      <source src="https://res.cloudinary.com/daarlhq52/video/upload/v1789741727/WhatsApp_20Video_202026-09-18_20at_207.49.04_20PM_1080p_20260918195556_f60bjv.mp4" type="video/mp4">
-    </video>
-  </div>
-
   <!-- CUSTOM CURSOR -->
   <div class="custom-cursor-dot" id="cursorDot"></div>
   <div class="custom-cursor-ring" id="cursorRing"></div>
@@ -775,28 +754,15 @@
 
   <!-- SCRIPTS -->
   <script>
-    // 1. INTRO VIDEO LOGIC (SMOOTH SLOW MOTION & NO SKIP BUTTON)
-    const introVideoContainer = document.getElementById('introVideoContainer');
-    const introVideo = document.getElementById('introVideo');
-
-    // Smooth and slow premium motion
-    introVideo.playbackRate = 0.85;
-
-    function dismissIntro() {
-      if (introVideoContainer.classList.contains('hidden')) return;
-      introVideoContainer.classList.add('hidden');
-      introVideo.pause();
-      
+    // 1. PAGE LOADER & INITIAL REVEAL
+    window.addEventListener('load', () => {
       setTimeout(() => {
         document.getElementById('pageLoader').classList.add('loaded');
         document.querySelectorAll('.hero-reveal-scale').forEach(el => {
           el.classList.add('active');
         });
-      }, 500);
-    }
-
-    introVideo.addEventListener('ended', dismissIntro);
-    setTimeout(() => { dismissIntro(); }, 6500);
+      }, 400);
+    });
 
     // 2. CUSTOM CURSOR
     const cursorDot = document.getElementById('cursorDot');
