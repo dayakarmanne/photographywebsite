@@ -67,7 +67,7 @@
       position: relative;
     }
 
-    /* BACKGROUND IMAGE STARTS BELOW THE 85px NAVBAR, COVERS ENTIRE WEBSITE PROFICIENTLY */
+    /* ENTIRE PHOTO FULLY VISIBLE BELOW NAVBAR WITHOUT CROPPING */
     body::before {
       content: "";
       position: fixed;
@@ -76,7 +76,7 @@
       right: 0;
       bottom: 0;
       background: url('https://res.cloudinary.com/daarlhq52/image/upload/v1788949060/arunbgimge_d1tfbg.png') no-repeat center top;
-      background-size: cover;
+      background-size: contain;
       z-index: -1;
       pointer-events: none;
     }
