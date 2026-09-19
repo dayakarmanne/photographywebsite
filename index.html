@@ -67,7 +67,7 @@
       position: relative;
     }
 
-    /* ENTIRE PHOTO FULLY VISIBLE BELOW NAVBAR WITHOUT CROPPING */
+    /* FULLY VISIBLE UHD BACKGROUND IMAGE (OPACITY REMOVED, CONTAINED CLEANLY BELOW NAVBAR) */
     body::before {
       content: "";
       position: fixed;
@@ -75,7 +75,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: url('https://res.cloudinary.com/daarlhq52/image/upload/v1788949060/arunbgimge_d1tfbg.png') no-repeat center top;
+      background: url('https://res.cloudinary.com/daarlhq52/image/upload/v1788949060/arunbgimge_d1tfbg.png') no-repeat center center;
       background-size: contain;
       z-index: -1;
       pointer-events: none;
@@ -84,6 +84,8 @@
     @media (max-width: 992px) {
       body::before {
         top: 75px;
+        background-size: contain;
+        background-position: center top;
       }
     }
 
